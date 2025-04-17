@@ -19,6 +19,11 @@ echo "[" > "$OUTPUT_FILE"
 # Find all experiment directories (skip index.html and experiments.json)
 FIRST=true
 for DIR in $(find "$RESULTS_DIR" -maxdepth 1 -mindepth 1 -type d | sort -r); do
+  # Skip templates directory if it exists in results
+  if [[ "$(basename "$DIR")" == "templates" ]]; then
+    continue
+  fi
+  
   # Get just the directory name
   DIR_NAME=$(basename "$DIR")
   

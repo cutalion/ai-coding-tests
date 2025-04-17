@@ -70,6 +70,12 @@ EXPERIMENT_RESULTS_DIR="results/$EXPERIMENT_ID"
 
 mkdir -p "$EXPERIMENT_RESULTS_DIR"
 
+# Create results/index.html if it doesn't exist
+if [ ! -f "results/index.html" ]; then
+  echo "Creating results/index.html from template..."
+  cp "templates/index.html" "results/index.html"
+fi
+
 echo "Starting experiment: $EXPERIMENT_ID"
 echo "Testing with prompt: $PROMPT"
 echo "Using models: ${MODELS[*]}"
@@ -87,82 +93,22 @@ for model in "${MODELS[@]}"; do
   mods -r -f text -m "$model" "$PROMPT" > "${EXPERIMENT_RESULTS_DIR}/${model}.html"
 done
 
-# Generate index.html with links to all model files
-echo "Generating index.html..."
-cat > "${EXPERIMENT_RESULTS_DIR}/index.html" << EOF
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${EXPERIMENT_NAME} - ${TIMESTAMP}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .prompt {
-            background-color: #f8f8f8;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #0066cc;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #f5f5f5;
-        }
-        a {
-            display: block;
-            color: #0066cc;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .back-link {
-            margin-top: 30px;
-            display: inline-block;
-        }
-    </style>
-</head>
-<body>
-    <h1>${EXPERIMENT_NAME} Results</h1>
-    <p>Experiment ID: ${EXPERIMENT_ID}</p>
-    
-    <div class="prompt">
-        <h3>Prompt:</h3>
-        <p>${PROMPT}</p>
-    </div>
-    
-    <ul>
-EOF
-
-# Add links for each model
+# Generate index.html from template
+echo "Generating index.html for this experiment..."
+MODEL_LINKS=""
 for model in "${MODELS[@]}"; do
-  echo "        <li><a href=\"${model}.html\" target=\"_blank\">${model}</a></li>" >> "${EXPERIMENT_RESULTS_DIR}/index.html"
+  MODEL_LINKS="${MODEL_LINKS}        <li><a href=\"${model}.html\" target=\"_blank\">${model}</a></li>\n"
 done
 
-# Add a back link to the main index
-cat >> "${EXPERIMENT_RESULTS_DIR}/index.html" << EOF
-    </ul>
-    
-    <a href="../index.html" class="back-link">← Back to all experiments</a>
-</body>
-</html>
-EOF
+# Use template for experiment index
+cp "templates/experiment-index.html" "${EXPERIMENT_RESULTS_DIR}/index.html"
+
+# Replace placeholders in the template
+sed -i "s/EXPERIMENT_NAME/${EXPERIMENT_NAME}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+sed -i "s/TIMESTAMP/${TIMESTAMP}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+sed -i "s/EXPERIMENT_ID/${EXPERIMENT_ID}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+sed -i "s|PROMPT_TEXT|${PROMPT}|g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+sed -i "s|<!-- MODEL_LINKS -->|${MODEL_LINKS}|" "${EXPERIMENT_RESULTS_DIR}/index.html"
 
 # Update the experiment list for the main index
 ./update_experiment_list.sh

@@ -96,6 +96,22 @@ Edit `defaults.sh` to change the default:
 - Prompt to use
 - Experiment name prefix
 
+## Structure
+
+- `run_tests.sh` - Main script to run tests
+- `defaults.sh` - Default configuration settings
+- `update_experiment_list.sh` - Updates list of experiments for the dashboard
+- `templates/` - HTML templates for result pages
+- `results/` - Contains all test results (excluded from git)
+
+## Sharing on GitHub
+
+This project is set up to exclude test results from git. When you push to GitHub:
+
+1. All code and templates will be included
+2. All test results in the `results/` directory will be excluded
+3. Others who clone your repository can run their own tests and generate their own results
+
 ## License
 
 MIT

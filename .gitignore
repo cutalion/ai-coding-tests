@@ -45,5 +45,6 @@ Thumbs.db
 .stylelintcache
 
 # Project-specific
-# Uncomment if you want to exclude results from git
-# results/
+# Exclude all experiment results
+results/*
+!results/.gitkeep

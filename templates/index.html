@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Coding Test Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .experiment {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #0066cc;
+        }
+        .experiment h3 {
+            margin-top: 0;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Coding Test Results</h1>
+    <p>This dashboard shows the results of AI code generation experiments.</p>
+    
+    <div class="container" id="experiments-container">
+        <!-- Experiments will be listed here by JavaScript -->
+        <div class="loader">Loading experiments...</div>
+    </div>
+
+    <script>
+        // Function to get all subdirectories in the results folder
+        async function getExperiments() {
+            const experimentsContainer = document.getElementById('experiments-container');
+            experimentsContainer.innerHTML = ''; // Clear loading message
+            
+            try {
+                // Fetch a list of all subdirectories in the results folder
+                const response = await fetch('experiments.json');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load experiment data');
+                }
+                
+                const experiments = await response.json();
+                
+                // Sort experiments by date (newest first)
+                experiments.sort((a, b) => {
+                    // Extract timestamp from experiment ID
+                    const dateA = a.id.split('_')[1] || '';
+                    const dateB = b.id.split('_')[1] || '';
+                    return dateB.localeCompare(dateA);
+                });
+                
+                // Create an element for each experiment
+                experiments.forEach(experiment => {
+                    const experimentDiv = document.createElement('div');
+                    experimentDiv.className = 'experiment';
+                    
+                    // Extract experiment name and timestamp
+                    let [name, timestamp] = experiment.id.split('_');
+                    timestamp = timestamp ? timestamp.replace(/_/g, ' ') : '';
+                    
+                    experimentDiv.innerHTML = `
+                        <h3>${name}</h3>
+                        <p class="timestamp">${timestamp}</p>
+                        <p><a href="${experiment.path}" target="_blank">View Results</a></p>
+                    `;
+                    
+                    experimentsContainer.appendChild(experimentDiv);
+                });
+                
+                // If no experiments found
+                if (experiments.length === 0) {
+                    experimentsContainer.innerHTML = '<p>No experiments found. Run ./run_tests.sh to create your first experiment.</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error loading experiments:', error);
+                experimentsContainer.innerHTML = `<p>Error loading experiments: ${error.message}</p>`;
+            }
+        }
+        
+        // Load experiments when the page loads
+        window.addEventListener('DOMContentLoaded', getExperiments);
+    </script>
+</body>
+</html>
