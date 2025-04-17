@@ -1,0 +1,8 @@
+[build]
+  publish = "results"
+  command = "./update_experiment_list.sh"
+  
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,20 @@
+{
+  "name": "ai-coding-tests",
+  "version": "1.0.0",
+  "description": "AI model code generation testing framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "./run_tests.sh",
+    "deploy": "netlify deploy --dir=results --prod"
+  },
+  "keywords": [
+    "ai",
+    "testing",
+    "code-generation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "netlify-cli": "^17.16.3"
+  }
+}
