@@ -15,7 +15,9 @@ This tool allows you to:
 
 - Node.js
 - NPM
-- [Mods CLI](https://github.com/charmbracelet/mods) (`mods` command must be available)
+- One of the following:
+  - [Mods CLI](https://github.com/charmbracelet/mods) for the default script (`mods` command must be available)
+  - API keys for various models if using the direct API method (see `.env.example`)
 - Netlify account (optional, for deployment)
 
 ## Installation
@@ -30,17 +32,25 @@ This tool allows you to:
 
 ### Basic Usage
 
-Run the test script with default settings:
+Run the test script with default settings using either:
 
-```
+```bash
+# Using mods CLI
 ./run_tests.sh
+
+# Using direct API calls
+./run_tests_curl.sh
 ```
 
-This will:
+Both scripts will:
 1. Query all configured AI models with the default tic-tac-toe prompt
 2. Generate HTML/JS/CSS implementations for each model
 3. Create a timestamped results directory with all outputs
 4. Generate an index.html file to compare results
+
+**Note for API version**: If using the direct API version (`run_tests_curl.sh`), you need to set up the API keys:
+1. Copy `.env.example` to `.env`
+2. Add your API keys to the `.env` file
 
 ### Custom Usage
 
@@ -98,11 +108,13 @@ Edit `defaults.sh` to change the default:
 
 ## Structure
 
-- `run_tests.sh` - Main script to run tests
+- `run_tests.sh` - Main script to run tests using mods CLI
+- `run_tests_curl.sh` - Alternative script using direct API calls with curl
 - `defaults.sh` - Default configuration settings
 - `update_experiment_list.sh` - Updates list of experiments for the dashboard
 - `templates/` - HTML templates for result pages
 - `results/` - Contains all test results (excluded from git)
+- `.env.example` - Example environment variables for API keys
 
 ## Sharing on GitHub
 
