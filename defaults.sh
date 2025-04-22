@@ -22,3 +22,6 @@ DEFAULT_PROMPT="write a tic-tac-toe game in a single html page. Return just an H
 
 # Default experiment name prefix
 DEFAULT_EXPERIMENT_NAME="ai-test"
+
+# Environment tools availability
+HAVE_SED=true

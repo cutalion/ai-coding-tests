@@ -98,52 +98,7 @@ fi
 # Create results/index.html if it doesn't exist
 if [ ! -f "results/index.html" ]; then
   echo "Creating results/index.html from template..."
-  if [ "$HAVE_CP" = true ] && [ -f "templates/index.html" ]; then
-    cp "templates/index.html" "results/index.html"
-  else
-    # Fallback if cp is not available or template doesn't exist
-    echo "<!DOCTYPE html>
-<html>
-<head>
-  <meta charset=\"UTF-8\">
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-  <title>AI Coding Test Results</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-    h1 { color: #333; }
-    .experiments { margin-top: 20px; }
-    .experiment { margin-bottom: 10px; }
-    a { color: #0066cc; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <h1>AI Coding Test Results</h1>
-  <p>Select an experiment to view:</p>
-  <div class=\"experiments\" id=\"experiments-list\"></div>
-  <script>
-    fetch('experiments.json')
-      .then(response => response.json())
-      .then(data => {
-        const list = document.getElementById('experiments-list');
-        data.forEach(exp => {
-          const div = document.createElement('div');
-          div.className = 'experiment';
-          const link = document.createElement('a');
-          link.href = exp.path;
-          link.textContent = exp.id;
-          div.appendChild(link);
-          list.appendChild(div);
-        });
-      })
-      .catch(error => {
-        document.getElementById('experiments-list').innerHTML = 
-          '<p>Error loading experiments. Please check if experiments.json exists.</p>';
-      });
-  </script>
-</body>
-</html>" > "results/index.html"
-  fi
+  cp "templates/index.html" "results/index.html"
 fi
 
 echo "Starting experiment: $EXPERIMENT_ID"
@@ -384,19 +339,16 @@ for model in "${MODELS[@]}"; do
   MODEL_LINKS="${MODEL_LINKS}        <li><a href=\"${model}.html\" target=\"_blank\">${model}</a></li>\n"
 done
 
-# If we have cp and the template exists, use it
-if [ "$HAVE_CP" = true ] && [ -f "templates/experiment-index.html" ]; then
-  # Use template for experiment index
-  cp "templates/experiment-index.html" "${EXPERIMENT_RESULTS_DIR}/index.html"
-  
-  # Replace placeholders in the template if sed is available
-  if [ "$HAVE_SED" = true ]; then
-    sed -i "s/EXPERIMENT_NAME/${EXPERIMENT_NAME}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
-    sed -i "s/TIMESTAMP/${TIMESTAMP}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
-    sed -i "s/EXPERIMENT_ID/${EXPERIMENT_ID}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
-    sed -i "s|PROMPT_TEXT|${PROMPT}|g" "${EXPERIMENT_RESULTS_DIR}/index.html"
-    sed -i "s|<!-- MODEL_LINKS -->|${MODEL_LINKS}|" "${EXPERIMENT_RESULTS_DIR}/index.html"
-  fi
+# Use template for experiment index
+cp "templates/experiment-index.html" "${EXPERIMENT_RESULTS_DIR}/index.html"
+
+# Replace placeholders in the template if sed is available
+if [ "$HAVE_SED" = true ]; then
+  sed -i "s/EXPERIMENT_NAME/${EXPERIMENT_NAME}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+  sed -i "s/TIMESTAMP/${TIMESTAMP}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+  sed -i "s/EXPERIMENT_ID/${EXPERIMENT_ID}/g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+  sed -i "s|PROMPT_TEXT|${PROMPT}|g" "${EXPERIMENT_RESULTS_DIR}/index.html"
+  sed -i "s|<!-- MODEL_LINKS -->|${MODEL_LINKS}|" "${EXPERIMENT_RESULTS_DIR}/index.html"
 else
   # Create a basic index.html file directly
   cat > "${EXPERIMENT_RESULTS_DIR}/index.html" << EOF
